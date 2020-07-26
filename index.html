@@ -4,9 +4,16 @@
     </head>
     <body>
         <header>
-            <h1>Sequels</h1> 
+            <h1>Was the Sequel Better than the First One?</h1> 
         </header>
-        <div id="chartContent"></div>
+        <div class="buttons">
+            <div class="button active" onclick="makeGif(plotAllMovies)">All</div>
+            <div class="button" onclick="makeGif(gotWorse)">Dropped the Ball</div>
+            <div class="button" onclick="makeGif(gotBetter)">Got Better</div>
+        </div>
+        <div id="chartContent">
+            <img src="res/loading.gif">
+        </div>
         <script src="https://d3js.org/d3.v5.min.js"></script>
         <script src="res/app.js"></script
     </body>

@@ -23,6 +23,30 @@ rect:hover {
     max-width: 90%;
 }
 
+.buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.button{
+    color: white;
+    background-color: grey;
+    text-align: center;
+    padding: 15px 32px;
+    display: inline-block;
+    font: 14px sans-serif;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+}
+
+.button:hover {
+    background-color: darkgray;
+}
+
 svg {
     margin-left: 20px;
     margin-right: 20px;
@@ -31,14 +55,20 @@ svg {
 div.tooltip {
     position: absolute;
     background-color: white;
-    width: 100px;
-    height: 30px;
+    width: 85px;
+    height: auto;
     padding: 3px;
     font: 14px sans-serif;
+    border: solid 2px black;
+    display: block;
 }
 
 .axisText {
     text-align: center;
     font: 13px sans-serif;
     font-weight: bold;
+}
+
+.active {
+    background-color: darkgrey;
 }

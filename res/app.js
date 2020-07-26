@@ -1,25 +1,110 @@
+var summary_data
+var movie_data
 
-//Get the Data
-fetch('res/movieData.json')
+// Get the summary data - this loads on page load
+fetch('res/summary.json')
     .then(res => res.json())
-    .then((out) => {
-        console.log(out)
-        
-        uniqueMovies = [...new Set(out.map(d => d.series))]
-        console.log(uniqueMovies)
+    .then(out => {
+        //console.log(out.sort(compare("series", 1)))
 
-        uniqueMovies.forEach(d => {
-            data = out.filter(i => i.series === d)
+        summary_data = out
 
-            makeChart(data)
+        makeActiveButtons()
+        getMovieData()
+    })
 
-            //Only show movies that are better
-            //if (data.map(d => d.imdb).reduce((n, item) => n !== false && item >= n && item)){
-            //    makeChart(data)
-            //}
-            
+
+//Get the Movie Data upon load and make the initial charts
+function getMovieData(){
+    fetch('res/movieData.json')
+        .then(res => res.json())
+        .then((out) => { 
+
+            movie_data = out
+
+            plotAllMovies()
+        });
+}
+
+function makeActiveButtons(){
+    let buttons = document.getElementsByClassName("button")
+
+    Array.from(buttons).forEach(d => {
+        d.addEventListener('click', () => {
+            Array.from(buttons).forEach(b => b.classList.remove('active'))
+
+            d.classList.add('active');
         })
     })
+}
+
+function makeGif(func){
+
+    func()
+
+}
+
+function plotAllMovies(){
+    d3.select("#chartContent").html("")
+    summary_data.map(d => {
+        data = movie_data.filter(i => i.series === d.series)
+
+        makeChart(data)
+        
+    })
+}
+
+function gotWorse(){
+    d3.select("#chartContent").html("")
+    betterMovies = summary_data.filter(d => d.imdb < 0)
+
+    betterMovies.map(d => {
+        data = movie_data.filter(i => i.series === d.series)
+
+        makeChart(data)
+        
+    })
+}
+
+function gotBetter(){
+    d3.select("#chartContent").html("")
+    betterMovies = summary_data.filter(d => d.imdb > 0)
+
+    betterMovies.map(d => {
+        data = movie_data.filter(i => i.series === d.series)
+
+        makeChart(data)
+        
+    })
+}
+
+//Used for sorting
+function compare(property, asc){
+    return function (a, b) {
+        if (a[property] < b[property]){
+            return -1 * asc
+        } else if (a[property] > b[property]){
+            return 1 * asc
+        } else {
+            return 0
+        }
+    }
+}
+
+//truncate string
+function truncateString(str, num = 15){
+    if(str.length <= num){
+        return str
+    } else {
+        return `${str.slice(0, num)}...`
+    }
+}
+
+//Add a tooltip
+var div = d3.select("body")
+.append("div")
+.classed("tooltip", true)
+.style("opacity", 0)
 
 //Make a chart
 function makeChart(data){
@@ -29,10 +114,7 @@ function makeChart(data){
     let seriesName = new Set(data.map(d => d.series))
     let axisName = seriesName.values().next()
 
-    var div = d3.select("body")
-        .append("div")
-        .classed("tooltip", true)
-        .style("opacity", 0)
+
     
     var svg = d3.select("#chartContent")
         .append("svg")
@@ -77,13 +159,18 @@ function makeChart(data){
         .on("mouseover", function(d) {
             div.style("opacity", 1);
 
-            div .html(`<strong>${d.title_clean}</strong> <hr> IMDB ${d.imdb}`)
-                .style("left", this.getBoundingClientRect().x + "px")
-                .style("top", (this.getBoundingClientRect().y + window.scrollY - 70) + "px");   
+            barBox = this.getBoundingClientRect()
+
+            div .html(`<strong>${truncateString(d.title_clean)}</strong> <hr> IMDB ${d.imdb}`)
+                .style("left", (barBox.x - 4) + "px")
+                .style("top", (barBox.y + window.scrollY - 75) + "px");   
         })
         .on("mouseout", d=> {
             div.style("opacity", 0)
         })
+        .on("click", d => {
+            window.open(`https://www.imdb.com/title/${d.imdb_id}`, '_blank');
+        });
     
     var axis = chartGroup.append("text")
         .attr("class", "axisText")
