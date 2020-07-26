@@ -11,10 +11,12 @@ fetch('res/movieData.json')
         uniqueMovies.forEach(d => {
             data = out.filter(i => i.series === d)
 
+            makeChart(data)
+
             //Only show movies that are better
-            if (data.map(d => d.imdb).reduce((n, item) => n !== false && item >= n && item)){
-                makeChart(data)
-            }
+            //if (data.map(d => d.imdb).reduce((n, item) => n !== false && item >= n && item)){
+            //    makeChart(data)
+            //}
             
         })
     })
@@ -76,8 +78,8 @@ function makeChart(data){
             div.style("opacity", 1);
 
             div .html(`<strong>${d.title_clean}</strong> <hr> IMDB ${d.imdb}`)
-                .style("left", this.getBoundingClientRect().left + "px")
-                .style("top", (this.getBoundingClientRect().top - 70) + "px");   
+                .style("left", this.getBoundingClientRect().x + "px")
+                .style("top", (this.getBoundingClientRect().y + window.scrollY - 70) + "px");   
         })
         .on("mouseout", d=> {
             div.style("opacity", 0)
